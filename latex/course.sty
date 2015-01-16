@@ -1,0 +1,262 @@
+% --- IDENTIFICATION ------------------------------------------------------
+
+% This package provides convenience macros for use in CS18 LaTeX documents.
+% Most notably, it provides language definitions for Scheme and OCaml (as
+% well as custom styles) so that the listings package can be used to format
+% code is CS18 documents.
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{cs-course}[2006/11/27 (jcutler)]
+
+\RequirePackage{listings}
+\RequirePackage{tweaklist}
+\RequirePackage{framed}
+\RequirePackage{verbatim}
+
+\renewcommand{\itemhook}{\setlength{\leftcodeskip}{2.5em}}
+\renewcommand{\enumhook}{\setlength{\leftcodeskip}{2.5em}}
+
+% --- MAIN CODE -----------------------------------------------------------
+
+% >>Language Definitions for listings
+
+% It may also be desirable to display built-ins (and in OCaml, types)
+% in their own style. This extension can be implemented by uncommenting
+% the appropriate lines in the below definitions, adding the complete
+% set of desired keywords, and defining a style for them. The [2] and [3]
+% allow a separate keyword style to be set for them. Look at the
+% documentation for the listings package for more info.
+
+% Although $ is considered a letter in Scheme, it will not generate
+% the desired effect because mathescape is set to true.
+\lstdefinelanguage[CS18]{Scheme}{
+	alsoletter={+,-,.,*,/,<,=,>,!,?,:,\$,\%,\_,\&,~,^},
+	morekeywords={define,lambda,if,cond,let,quote},
+	%morekeywords={[2]+,-,*,/,map,list,filter},
+	otherkeywords={'},
+	sensitive=false,
+	morecomment=[l]{;},
+	%morecomment=[n]{#|}{|#},
+	morestring=[b]",
+	tabsize=4}
+	
+\lstdefinelanguage[CS18]{Ocaml}{
+	alsoletter={\_,},
+	morekeywords={let,rec, if,in,and,or,with,match,fun,function,
+	module,sig,struct,end,type,exception,val,of},
+	%morekeywords={[2]List.map,List.filter},
+	%morekeywords={[3]int,list},
+	otherkeywords={->,::,|},
+	sensitive=true,
+	morecomment=[n]{(*}{*)},
+	morestring=[b]",
+	tabsize=2}
+
+% >>Shortcut for inline code
+\newcommand{\code}[1]{\lstinline{#1}}
+
+% >>Style Definitions for listings
+
+\lstdefinestyle{universal}{
+	moredelim=[is][\bfseries\sffamily\underbar]{~!}{!~},
+	mathescape=true,
+	breaklines=true,
+	breakatwhitespace=true,
+	columns=[l]fullflexible,
+	xleftmargin=.1\linewidth,
+	linewidth=.9\linewidth,
+	frame=%single
+}
+
+\lstdefinestyle{mono}{
+	basicstyle=\ttfamily,
+	identifierstyle =,
+	commentstyle=\rmfamily\itshape,
+	keywordstyle=
+}
+
+\lstdefinestyle{roman}{
+	basicstyle=\rmfamily,
+	identifierstyle=,
+	commentstyle=\sffamily\itshape,
+	keywordstyle=
+}
+
+\lstdefinestyle{numbers}{
+	numbers=left,
+	numberstyle=\small\sffamily,
+	breakindent=0pt
+}
+
+\newcommand{\usedefaultcodestyle}{ % Default style
+	\lstset{style=universal}
+	\lstset{style=mono}
+	%\lstset{style=numbers}
+}
+
+% >>Other macros
+
+% Name:	\descr
+% In:	text
+% Out:	<text>,  where the text is italicized text and < and > are /langle
+%		and /rangle brackets
+% Note:	If either you don't want the argument italicized or you don't want
+%		it to be text (i.e. you're in math mode and want it typeset in math
+%		mode), use the starred version of the command; alternatively, you can
+%		pass \textnormal{text} or $text$, respectively, to the unstarred version
+\newcommand{\descr}{
+	\@ifstar
+		\descrplain%
+		\descritalicized%
+}
+\newcommand{\descrplain}[1]{\ensuremath{\langle}#1\ensuremath{\rangle}}
+\newcommand{\descritalicized}[1]{\ensuremath{\langle}\textit{#1}\ensuremath{\rangle}}
+
+
+% Name: \ceil
+% Usage: in math mode
+% In: text
+% Out: text enclosed in ceiling ``parens''
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+
+% Name: \floor
+% Usage: in math mode
+% In: text
+% Out: text enclosed in floor ``parens''
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+
+\newcommand{\overlabel}[2]{\overset{#1}{\overbrace{#2}}}
+\newcommand{\underlabel}[2]{\underset{#1}{\underbrace{#2}}}
+
+\renewenvironment{leftbar}{%
+  \def\FrameCommand{\vrule width 1pt \hspace{10pt}}%
+  \MakeFramed {\advance\hsize-\width \FrameRestore}}%
+ {\endMakeFramed}
+
+% Point counts:
+% {\DeclareRobustCommand{\CS@pointcount}{\small (#1 pts.)}}
+
+% now, set up the page styles (one for first page, one for
+% subsequent pages)
+
+%\newlength{\CS@classnumwidth}
+%\settowidth{\CS@classnumwidth}{\CS@classnum}
+%\DeclareRobustCommand{\CS@duedate}{TBA}
+%\newcommand*{\docdate}[1]{\DeclareRobustCommand{\CS@duedate}{#1}}
+%\newcommand*{\due}{\docdate}
+\DeclareRobustCommand{\gradingtable}[1]{
+{
+\newcounter{val}
+\setcounter{val}{#1}
+
+\Large
+\newcounter{cur}
+\setlength{\unitlength}{15.6pt}
+\begin{picture}(0,\value{val})
+\setlength{\unitlength}{15pt}
+\multiput(0,\value{val})(0,-1){\value{val}}{\framebox(1,1){\stepcounter{cur}\arabic{cur}}}
+\multiput(1,\value{val})(0,-1){\value{val}}{\framebox(3,1){}}
+\put(0,-1.2){\framebox(1,2){T}}
+\put(1,-1.2){\framebox(3,2){}}
+
+\newsavebox{\temp}
+\setlength{\unitlength}{15.2pt}
+\savebox{\temp}(0,0)[bl]{
+\put(-.2,0){\line(0,1){\value{val}}}
+\put(4.2,0){\line(0,1){\value{val}}}
+\put(-.2,\value{val}){\line(1,0){4.4}}
+\put(-.2,0){\line(0,-1){2.4}}
+\put(4.2,0){\line(0,-1){2.4}}
+\put(-.2,-2.4){\line(1,0){4.4}}
+}
+\put(0,-1.4){\usebox{\temp}}
+\end{picture}
+}
+}
+%\newcommand{\ps@firsthead}{ %
+%  \renewcommand{\@oddhead}{ %
+%    \textbf{\CS@classnum\hfill} %
+%    \CS@classname\hfill %
+%    \makebox[\CS@classnumwidth][r]{\CS@prof} %
+%  } %
+%  \renewcommand{\@oddfoot}{} %
+%  \renewcommand{\@evenhead}{\@oddhead} %
+%  \renewcommand{\@evenfoot}{\@oddfoot} %
+%}
+%\newcommand{\ps@head}{ %
+%  \renewcommand{\@oddhead}{ %
+%    {\CS@classnum}
+%    \hfill %
+%    \asgnname\hfill %
+%    {\makebox[\CS@classnumwidth][r]{\textbf{\CS@duedate}}} %
+%}
+%  \renewcommand{\@oddfoot}{\hfill \thepage \hfill} %
+%  \renewcommand{\@evenhead}{\@oddhead} %
+%  \renewcommand{\@evenfoot}{\@oddfoot} %
+%}
+%\pagestyle{head}
+%\thispagestyle{firsthead}
+%\newenvironment{blockindent}{\begin{list}{\quad}{}}{\end{list}}
+%
+%\parskip = 6pt
+%\parindent = 0pt
+
+% \font\manual=manfnt
+%\DeclareRobustCommand{\dbend}{{\font\manual=manfnt\manual\char127}} % dangerous bend sign
+%\DeclareRobustCommand{\zigzag}{\marginpar{{\LARGE\dbend}}} % style for code/text formatting
+
+%\DeclareRobustCommand{\display}[1]{\hspace*{0.0in}\newline
+%\vspace*{0.2in}
+%\begin{centering}
+%{\fbox{\parbox{4.7in}{#1}}}
+%\end{centering}
+%\vspace*{0.2in}}
+%\DeclareRobustCommand{\duedate}{\CS@duedate}
+\DeclareRobustCommand{\ul}[1]{\underline{#1}}
+
+\DeclareRobustCommand{\addmark}{
+\setlength{\unitlength}{5mm}
+\begin{picture}(0,0)(4.0,1.75)
+\thinlines
+\put(1,1.5){\oval(1.0,0.5)[l]}
+\put(1.5,2.0){\oval(0.5,1.0)[t]}
+\put(2,1.5){\oval(1.0,0.5)[r]}
+\put(1.5,1.0){\oval(0.5,1.0)[b]}
+\put(1,2){\oval(0.5,0.5)[br]}
+\put(2,2){\oval(0.5,0.5)[bl]}
+\put(2,1){\oval(0.5,0.5)[tl]}
+\put(1,1){\oval(0.5,0.5)[tr]}
+\end{picture}}
+
+\newenvironment{addition}{\begin{leftbar}\addmark{}\ignorespaces}{\end{leftbar}\ignorespacesafterend}
+
+\newenvironment{qa}{\begin{leftbar}\ignorespaces}{\end{leftbar}\ignorespacesafterend}
+\DeclareRobustCommand{\meta}{\comment}
+\DeclareRobustCommand{\endmeta}{\endcomment}
+\DeclareRobustCommand{\sol}{\comment}
+\DeclareRobustCommand{\endsol}{\endcomment}
+\newenvironment{quizbox}{\begin{framed}\ignorespaces}{\end{framed}\ignorespacesafterend}
+\DeclareRobustCommand{\goesto}{\ensuremath{\Rightarrow{}}}
+\DeclareRobustCommand{\co}[1]{\texttt{#1}}
+\DeclareRobustCommand{\qed}{\ensuremath{\diamond{}}}
+
+\pagestyle{head}
+\thispagestyle{firsthead}
+\newenvironment{blockindent}{\begin{list}{\quad}{}}{\end{list}}
+
+\parskip = 6pt
+\parindent = 0pt
+
+% \font\manual=manfnt
+\DeclareRobustCommand{\dbend}{{\font\manual=manfnt\manual\char127}} % dangerous bend sign
+\DeclareRobustCommand{\zigzag}{\marginpar{{\LARGE\dbend}}} % style for code/text formatting
+
+\DeclareRobustCommand{\display}[1]{\hspace*{0.0in}\newline
+\vspace*{0.2in}
+\begin{centering}
+{\fbox{\parbox{4.7in}{#1}}}
+\end{centering}
+\vspace*{0.2in}}
+
+% vim: ft=tex
+

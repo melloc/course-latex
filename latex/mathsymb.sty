@@ -1,0 +1,21 @@
+%% 
+%% This is file `mathsymb.sty`
+%% by Frank Langbein
+%% 
+%% This file provides the symbols C,R,N,Q,K based on the font msbm
+%% for LaTeX2e and compatibility mode.
+%% 
+\def\fileversion{1.0}
+\def\filedate{1994/09/22}
+  \ProvidesPackage{mathsymb}[\filedate\space\fileversion\space
+                             mathsymb.sty for C R N Q K]
+
+\DeclareSymbolFont{msbm}{U}{msb}{m}{n}
+\DeclareMathSymbol{\C}{\mathalpha}{msbm}{'103}
+\DeclareMathSymbol{\E}{\mathalpha}{msbm}{'105}
+\DeclareMathSymbol{\R}{\mathalpha}{msbm}{'122}
+\DeclareMathSymbol{\Q}{\mathalpha}{msbm}{'121}
+\DeclareMathSymbol{\Z}{\mathalpha}{msbm}{'132}
+\DeclareMathSymbol{\N}{\mathalpha}{msbm}{'116}
+\DeclareMathSymbol{\K}{\mathalpha}{msbm}{'113}
+

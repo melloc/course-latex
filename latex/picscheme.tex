@@ -1,0 +1,306 @@
+% picscheme.tex
+% Dorai Sitaram
+% Last change, 2005-04-26
+
+\ifx\pdfoutput\UNDEFINED
+  \input epsf
+\else
+  \input supp-pdf
+  \def\epsfbox#1{\convertMPtoPDF{#1}{1}{1}}%
+\fi
+
+\ifx\eval\UNDEFINED
+  \input eval4tex
+\fi
+
+\eval{
+; Nov 12, 2000 
+; Jan 4, 2003 
+; output MetaPost instead of TeX
+
+(require (lib "process.ss"))
+;(require (lib "trace.ss"))
+
+;non-std oprs used: error, fluid-let, system, unless, when
+
+(define *operating-system*
+  ;change if you need a better OS identifier
+  (if (getenv "COMSPEC") 
+      (let ((term (getenv "TERM")))
+        (if (and (string? term) (string=? term "cygwin"))
+            'unix 'windows))
+      'unix))
+
+(define *metapost*
+  ;don't know why, but MetaPost is called mpost in
+  ;teTeX (all Unix TeXs?) and mp in MikTeX (all
+  ;Windows TeXs?)
+  (case *operating-system*
+    ((windows) "mp")
+    (else "mpost")))
+
+(define *jobname* "|jobname")
+
+(define temp-file ".eval4tex.tmp")
+
+(define *nested-picture?* #f)
+
+(define *mpicscheme-count* 0)
+
+(define bp-equivalent-of
+  (lambda (unit)
+    (case unit
+      ((bp) 1)
+      ((in) 72)
+      ((pt) (/ (bp-equivalent-of 'in) 72.27))
+      ((pc) (* 12 (bp-equivalent-of 'pt))) 
+      ((cm) (/ (bp-equivalent-of 'in) 2.54))
+      ((mm) (/ (bp-equivalent-of 'cm) 10)) 
+      ((dd) (* 1238/1157 (bp-equivalent-of 'pt)))
+      ((cc) (* 12 (bp-equivalent-of 'dd))) 
+      ((sp) (/ (bp-equivalent-of 'pt) 65536))
+      (else (error 'bp-equivalent-of)))))
+
+(define dimen
+  (lambda (n unit)
+    (* n (bp-equivalent-of unit))))
+
+(define *unit-length* (dimen 1 'bp))
+
+(define picture-current-unit-to-bp ;u
+  (lambda (x)
+    (* x *unit-length*)))
+
+(define thin-lines
+  (lambda ()
+    (display "pickup pencircle scaled .5;")
+    (newline)))
+
+(define thick-lines
+  (lambda ()
+    (display "pickup pencircle scaled 1;")
+    (newline)))
+
+(define pencil-width
+  (lambda (x)
+    (display "pickup pencircle scaled ")
+    (display (picture-current-unit-to-bp x))))
+
+(define ensure-file-deleted
+  (lambda (f)
+    (if (file-exists? f) (delete-file f))))
+
+(define picture
+  (lambda (th)
+    (let ((draw-the-picture
+            (lambda ()
+              (fluid-let ((*nested-picture?* #t))
+                (th)))))
+      (cond ((not *nested-picture?*)
+             (set! *mpicscheme-count* (+ *mpicscheme-count* 1))
+             (let* ((mp-file-stem (string-append
+                                    *jobname* "-Z-mp-"
+                                    (number->string *mpicscheme-count*)))
+                    (mp-file (string-append mp-file-stem ".mp")))
+               (ensure-file-deleted mp-file)
+               (with-output-to-file mp-file
+                 (lambda ()
+                   (display "beginfig(1);") (newline)
+                   (display "path gensym[];") (newline)
+                   (draw-the-picture)
+                   (display "endfig;") (newline)
+                   (display "end.") (newline)))
+               (ensure-file-deleted temp-file)
+               (with-output-to-file temp-file
+                 ;we don't want whatever metapost dribbles to get into 
+                 ;the eval4tex aux file
+                 (lambda ()
+                   (system (string-append *metapost* " " mp-file))))
+               (display "\\epsfbox{")
+               (display mp-file-stem)
+               (display ".1}")))
+            (else (draw-the-picture))))))
+
+(define point 
+  (lambda (x y)
+    (if (and (number? x) (number? y))
+        (make-rectangular x y)
+        (string-append "("
+                       (if (number? x) (number->string x) x)
+                       ", "
+                       (if (number? y) (number->string y) y)
+                       ")"))))
+
+(define x-part
+  (lambda (z)
+    (if (number? z) (real-part z)
+        (string-append "xpart " z))))
+
+(define y-part
+  (lambda (z)
+    (if (number? z) (imag-part z)
+        (string-append "ypart " z))))
+
+(define picture-point-to-string
+  (lambda (z)
+    (if (number? z)
+        (let ((z (picture-current-unit-to-bp z)))
+          (string-append "(" (number->string (real-part z))
+                         ", " (number->string (imag-part z)) ")"))
+        z)))
+
+(define draw
+  (lambda (p)
+    (display "draw ") (display p) (display ";")
+    (newline)))
+
+(define draw-arrow
+  (lambda (p)
+    (display "drawarrow ") (display p) (display ";")
+    (newline)))
+
+(define draw-double-arrow
+  (lambda (p)
+    (display "drawdblarrow ") (display p) (display ";")
+    (newline)))
+
+(define shift
+  (lambda (pt p)
+    (string-append p " shifted "
+                   (picture-point-to-string pt))))
+
+(define scale
+  (lambda (s p)
+    (string-append p " scaled "
+                   (number->string s))))
+
+(define x-scale
+  (lambda (s p)
+    (string-append p " xscaled " 
+                   (number->string s))))
+
+(define y-scale
+  (lambda (s p)
+    (string-append p " yscaled " 
+                   (number->string s))))
+
+(define slant
+  (lambda (s p)
+    (string-append p " slanted " 
+                   (number->string s))))
+
+(define radians-to-degrees
+  (let ((pi (acos -1)))
+    (lambda (rads)
+      (* rads 180 (/ pi)))))
+
+(define rotate
+  (lambda (th p)
+    (string-append p " rotated " 
+                   (number->string 
+                     (radians-to-degrees th)))))
+
+(define rotate-about
+  (lambda (z th p)
+    (string-append p " rotatedabout ("
+                   (picture-point-to-string z)
+                   ", "
+                   (number->string
+                     (radians-to-degrees th)))))
+
+(define reflect-about
+  (lambda (z1 z2 p)
+    (string-append p " reflectedabout ("
+                   (picture-point-to-string z1)
+                   ", "
+                   (picture-point-to-string z2)
+                   ")")))
+
+
+(define z-scale
+  (lambda (z p)
+    (string-append p " zscaled "
+                   (picture-point-to-string z))))
+
+(define make-path-variable
+  (let ((n 0))
+    (lambda ()
+      (set! n (+ n 1))
+      (string-append "gensym" 
+                     (number->string n)))))
+
+
+(define path 
+  (lambda aa
+    (let loop ((aa aa) (s ""))
+      (if (null? aa) s
+          (let ((z (car aa)))
+            (case z
+              ((--) (loop (cdr aa) (string-append s " -- ")))
+              ((**) (loop (cdr aa) (string-append s " .. ")))
+              ((direction) (loop (cddr aa)
+                                 (string-append s "{"
+                                                (picture-point-to-string (cadr aa))
+                                                "}")))
+              ((controls) (loop (cdr aa) (string-append s " controls ")))
+              ((and) (loop (cdr aa) (string-append s " ands ")))
+              ((cycle) 
+               (unless (null? (cdr aa))
+                 (error 'path "There can be more path elements after cycle"))
+               (loop '() (string-append s " cycle")))
+              (else
+                (loop (cdr aa)
+                      (string-append s
+                                     (picture-point-to-string z))))))))))
+
+(define append-path
+  (lambda pp 
+    (let ((p3 (make-path-variable)))
+      (display p3) (display " := ")
+      (let ((first? #t))
+        (let loop ((pp pp))
+          (cond ((null? pp) (display ";") (newline)
+                            p3)
+                (else (if first? (set! first? #f)
+                          (display " & "))
+                      (display (car pp))
+                      (loop (cdr pp)))))))))
+
+
+(define quarter-circle
+  (lambda ()
+    (string-append "quartercircle scaled "
+                   (number->string *unit-length*))))
+
+(define half-circle
+  (lambda ()
+    (string-append "halfcircle scaled "
+                   (number->string *unit-length*))))
+
+(define full-circle
+  (lambda ()
+    (string-append "fullcircle scaled "
+                   (number->string *unit-length*))))
+
+(define unit-square
+  (lambda ()
+    (string-append "unitsquare scaled "
+                   (number->string *unit-length*))))
+
+(define label
+  (lambda (z txt . pos)
+    (display "label")
+    (when (pair? pos)
+      (let ((pos (car pos)))
+        (display
+          (case pos
+            ((lft) ".lft") ((ulft) ".ulft") ((top) ".top")
+            ((urt) ".urt") ((rt) ".rt") ((lrt) ".lrt")
+            ((bot) ".bot") ((llft) ".llft")
+            (else (error 'label "Illegal label position"))))))
+    (display "(btex ") (display txt) (display " etex, ")
+    (display (picture-point-to-string z))
+    (display ");")
+    (newline)))
+
+}

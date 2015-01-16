@@ -1,0 +1,131 @@
+%%% alltimes.sty
+%%% Eric Stollnitz
+%%% Time-stamp: <95/12/23 16:20:46 stoll>
+\def\fileversion{1.0}
+\def\filedate{95/11/15}
+\def\docdate {95/11/15}
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{alltimes}[\filedate\space\fileversion\space
+ Times PSNFSS2e package plus Times in math]
+
+%%% Set default sans serif font to Helvetica,
+%%% default serifed font to Times, and
+%%% default typewriter font to Courier:
+\renewcommand{\sfdefault}{phv}
+\renewcommand{\rmdefault}{ptm}
+\renewcommand{\ttdefault}{pcr}
+
+%%% Change math alphabet identifiers to use Times:
+\DeclareMathAlphabet{\mathrm}    {OT1}{ptm}{m}{n}
+\DeclareMathAlphabet{\mathbf}    {OT1}{ptm}{b}{n}
+\DeclareMathAlphabet{\mathsf}    {OT1}{phv}{m}{n}
+\DeclareMathAlphabet{\mathtt}    {OT1}{pcr}{m}{n}
+\DeclareMathAlphabet{\mathnormal}{OT1}{ptm}{m}{it}
+\DeclareMathAlphabet{\mathit}    {OT1}{ptm}{m}{it}
+\DeclareMathAlphabet{\mathbit}   {OT1}{ptm}{b}{it}
+
+%%% Change math operators (log, sin, and so on) to use Times:
+\DeclareSymbolFont{operators}    {OT1}{ptm}{m}{n}
+\SetSymbolFont{operators}{bold}  {OT1}{ptm}{b}{n}
+
+%%% Declare new symbol fonts to be used for punctuation and letters:
+\DeclareSymbolFont{times}        {OT1}{ptm}{m}{n}
+\SetSymbolFont{times}{bold}      {OT1}{ptm}{b}{n}
+\DeclareSymbolFont{timesit}      {OT1}{ptm}{m}{it}
+\SetSymbolFont{timesit}{bold}    {OT1}{ptm}{b}{it}
+
+%%% Redefine all the math symbols that should use Times:
+\DeclareMathSymbol{,}{\mathpunct}{times}{"2C}
+\DeclareMathSymbol{.}{\mathpunct}{times}{"2E}
+\DeclareMathSymbol{0}{\mathalpha}{times}{"30}
+\DeclareMathSymbol{1}{\mathalpha}{times}{"31}
+\DeclareMathSymbol{2}{\mathalpha}{times}{"32}
+\DeclareMathSymbol{3}{\mathalpha}{times}{"33}
+\DeclareMathSymbol{4}{\mathalpha}{times}{"34}
+\DeclareMathSymbol{5}{\mathalpha}{times}{"35}
+\DeclareMathSymbol{6}{\mathalpha}{times}{"36}
+\DeclareMathSymbol{7}{\mathalpha}{times}{"37}
+\DeclareMathSymbol{8}{\mathalpha}{times}{"38}
+\DeclareMathSymbol{9}{\mathalpha}{times}{"39}
+\DeclareMathSymbol{A}{\mathalpha}{timesit}{"41}
+\DeclareMathSymbol{B}{\mathalpha}{timesit}{"42}
+\DeclareMathSymbol{C}{\mathalpha}{timesit}{"43}
+\DeclareMathSymbol{D}{\mathalpha}{timesit}{"44}
+\DeclareMathSymbol{E}{\mathalpha}{timesit}{"45}
+\DeclareMathSymbol{F}{\mathalpha}{timesit}{"46}
+\DeclareMathSymbol{G}{\mathalpha}{timesit}{"47}
+\DeclareMathSymbol{H}{\mathalpha}{timesit}{"48}
+\DeclareMathSymbol{I}{\mathalpha}{timesit}{"49}
+\DeclareMathSymbol{J}{\mathalpha}{timesit}{"4A}
+\DeclareMathSymbol{K}{\mathalpha}{timesit}{"4B}
+\DeclareMathSymbol{L}{\mathalpha}{timesit}{"4C}
+\DeclareMathSymbol{M}{\mathalpha}{timesit}{"4D}
+\DeclareMathSymbol{N}{\mathalpha}{timesit}{"4E}
+\DeclareMathSymbol{O}{\mathalpha}{timesit}{"4F}
+\DeclareMathSymbol{P}{\mathalpha}{timesit}{"50}
+\DeclareMathSymbol{Q}{\mathalpha}{timesit}{"51}
+\DeclareMathSymbol{R}{\mathalpha}{timesit}{"52}
+\DeclareMathSymbol{S}{\mathalpha}{timesit}{"53}
+\DeclareMathSymbol{T}{\mathalpha}{timesit}{"54}
+\DeclareMathSymbol{U}{\mathalpha}{timesit}{"55}
+\DeclareMathSymbol{V}{\mathalpha}{timesit}{"56}
+\DeclareMathSymbol{W}{\mathalpha}{timesit}{"57}
+\DeclareMathSymbol{X}{\mathalpha}{timesit}{"58}
+\DeclareMathSymbol{Y}{\mathalpha}{timesit}{"59}
+\DeclareMathSymbol{Z}{\mathalpha}{timesit}{"5A}
+\DeclareMathSymbol{a}{\mathalpha}{timesit}{"61}
+\DeclareMathSymbol{b}{\mathalpha}{timesit}{"62}
+\DeclareMathSymbol{c}{\mathalpha}{timesit}{"63}
+\DeclareMathSymbol{d}{\mathalpha}{timesit}{"64}
+\DeclareMathSymbol{e}{\mathalpha}{timesit}{"65}
+\DeclareMathSymbol{f}{\mathalpha}{timesit}{"66}
+\DeclareMathSymbol{g}{\mathalpha}{timesit}{"67}
+\DeclareMathSymbol{h}{\mathalpha}{timesit}{"68}
+\DeclareMathSymbol{i}{\mathalpha}{timesit}{"69}
+\DeclareMathSymbol{j}{\mathalpha}{timesit}{"6A}
+\DeclareMathSymbol{k}{\mathalpha}{timesit}{"6B}
+\DeclareMathSymbol{l}{\mathalpha}{timesit}{"6C}
+\DeclareMathSymbol{m}{\mathalpha}{timesit}{"6D}
+\DeclareMathSymbol{n}{\mathalpha}{timesit}{"6E}
+\DeclareMathSymbol{o}{\mathalpha}{timesit}{"6F}
+\DeclareMathSymbol{p}{\mathalpha}{timesit}{"70}
+\DeclareMathSymbol{q}{\mathalpha}{timesit}{"71}
+\DeclareMathSymbol{r}{\mathalpha}{timesit}{"72}
+\DeclareMathSymbol{s}{\mathalpha}{timesit}{"73}
+\DeclareMathSymbol{t}{\mathalpha}{timesit}{"74}
+\DeclareMathSymbol{u}{\mathalpha}{timesit}{"75}
+\DeclareMathSymbol{v}{\mathalpha}{timesit}{"76}
+\DeclareMathSymbol{w}{\mathalpha}{timesit}{"77}
+\DeclareMathSymbol{x}{\mathalpha}{timesit}{"78}
+\DeclareMathSymbol{y}{\mathalpha}{timesit}{"79}
+\DeclareMathSymbol{z}{\mathalpha}{timesit}{"7A}
+
+%%% Fix uppercase Greek letters, which no longer come from the operators
+%%% font:
+\DeclareSymbolFont{greekup}        {OT1}{cmr}{m}{n}
+\SetSymbolFont{greekup}{bold}      {OT1}{cmr}{bx}{n}
+\DeclareMathSymbol{\Gamma  }{\mathord}{greekup}{"00}
+\DeclareMathSymbol{\Delta  }{\mathord}{greekup}{"01}
+\DeclareMathSymbol{\Theta  }{\mathord}{greekup}{"02}
+\DeclareMathSymbol{\Lambda }{\mathord}{greekup}{"03}
+\DeclareMathSymbol{\Xi     }{\mathord}{greekup}{"04}
+\DeclareMathSymbol{\Pi     }{\mathord}{greekup}{"05}
+\DeclareMathSymbol{\Sigma  }{\mathord}{greekup}{"06}
+\DeclareMathSymbol{\Upsilon}{\mathord}{greekup}{"07}
+\DeclareMathSymbol{\Phi    }{\mathord}{greekup}{"08}
+\DeclareMathSymbol{\Psi    }{\mathord}{greekup}{"09}
+\DeclareMathSymbol{\Omega  }{\mathord}{greekup}{"0A}
+\DeclareMathSymbol{\Gamma  }{\mathord}{greekup}{"00}
+\DeclareMathSymbol{\Delta  }{\mathord}{greekup}{"01}
+\DeclareMathSymbol{\Theta  }{\mathord}{greekup}{"02}
+\DeclareMathSymbol{\Lambda }{\mathord}{greekup}{"03}
+\DeclareMathSymbol{\Xi     }{\mathord}{greekup}{"04}
+\DeclareMathSymbol{\Pi     }{\mathord}{greekup}{"05}
+\DeclareMathSymbol{\Sigma  }{\mathord}{greekup}{"06}
+\DeclareMathSymbol{\Upsilon}{\mathord}{greekup}{"07}
+\DeclareMathSymbol{\Phi    }{\mathord}{greekup}{"08}
+\DeclareMathSymbol{\Psi    }{\mathord}{greekup}{"09}
+\DeclareMathSymbol{\Omega  }{\mathord}{greekup}{"0A}
+
+%%% The end.
+\endinput

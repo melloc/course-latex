@@ -1,0 +1,24 @@
+\begin{document}
+\def\subjobname{@name-with-mode}
+\begin{schemeregion}
+\setspecialsymbol{>=}{$\ge$}
+\setspecialsymbol{>}{$>$}
+\setspecialsymbol{<}{$<$}
+\setspecialsymbol{<=}{$\le$}
+\setspecialsymbol{=>}{$\Rightarrow$}
+\setspecialsymbol{<=>}{$\Leftrightarrow$}
+\setspecialsymbol{==}{$==$}
+\setspecialsymbol{->}{$\to$}
+\setspecialsymbol{<-}{$\leftarrow$}
+\setspecialsymbol{:!}{\textbf{;}}
+\setspecialsymbol{!:}{\textbf{;}}
+\setkeyword{define-struct}
+\setkeyword{local}
+
+\begin{center}
+{\huge \bf \asgnname}\\
+{\Large \em\vspace{1ex}\dateprefix\CSduedate}
+\end{center}
+
+\tableofcontents
+

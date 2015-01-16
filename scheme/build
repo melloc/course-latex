@@ -1,0 +1,19 @@
+#!/usr/bin/env racket
+#lang racket
+
+(require "common.rkt" "build.ss")
+
+(define-values (modes args) (parse-args "build" (argv)))
+(define-values (doc-dir doc-type doc-name) (get-doc args (current-directory)))
+(define mode-string (foldl (lambda (a b) (string-append b "-" a)) "" modes))
+(define mode-eval-string (format "~a" `(define modes ',modes)))
+(define name-with-mode (or (file-name) (string-append doc-name mode-string)))
+
+(when (output-to-web) 
+  (output-dir (format "~a/content/~a" web-directory doc-type))
+  (output-umask #o002))
+
+(run-build doc-dir "main.tex.mz" doc-name mode-eval-string name-with-mode)
+
+; vim: ft=scheme
+
