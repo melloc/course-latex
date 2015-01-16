@@ -58,6 +58,40 @@ COURSE_SEM_OTHER:
 COURSE_SEM_ADVANCED:
   The value to use for @nameSemAdvanced{}. Defaults to $COURSE_NUM.
 
+
+Dependencies
+============
+
+To run this, you should make sure that you have installed:
+
+- pygments
+- rubber
+- latex
+- racket
+
+
+Debian/Ubuntu
+-------------
+
+```shell
+apt-get install rubber python-pygments texlive-latex-base racket
+```
+
+Gentoo
+-------
+
+```shell
+emerge -av rubber pygments texlive racket
+```
+
+FreeBSD
+-------
+
+```shell
+pkg install rubber py27-pygments texlive-base racket
+```
+
+
 Built-in Macros
 ===============
 
