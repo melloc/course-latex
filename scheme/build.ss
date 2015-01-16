@@ -10,8 +10,13 @@
 
 (provide (all-defined-out))
 
-(define libc (ffi-lib "libc" '("7" "6" #f)))
-(define set-umask! (get-ffi-obj "umask" libc (_cprocedure (list _uint32) _uint32)))
+(define (libc-fail)
+  (displayln "Unable to load libc. set-umask! won't work." (current-error-port)) #f)
+(define libc (ffi-lib "libc" '("7" "6" #f) #:fail libc-fail))
+(define set-umask!
+  (if libc
+    (get-ffi-obj "umask" libc (_cprocedure (list _uint32) _uint32))
+    identity))
 
 ;; Unfortunately, getting current umask requires setting it. Let's set it
 ;; to be stricter than 000. (Most people recommend 000. It's better IMO to
