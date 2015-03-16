@@ -49,6 +49,7 @@
 @defcommand{dateprefix}{pfx}{\newcommand{\dateprefix}{pfx}}
 
 \documentclass{courseclass}
+\usepackage{etex}
 \usepackage{multirow}
 \usepackage{slatex}
 \usepackage{parsetree}
@@ -69,6 +70,7 @@
 \usepackage{algorithmic}
 \usepackage{algorithm}
 \usepackage{graphs}
+\usepackage{tikz,pgfplots}
 \lstdefinelanguage{scala}{}
 
 \input{pygments_support.tex}
@@ -125,6 +127,20 @@ access to the code you've just written.
 }
 
 @defcommand{hw}{^num ^name}{@asgnname{Homework ^num: ^name}
+@coursedate{hw^num}@dateprefix{Due: }
+\renewcommand{\labelenumi}{\arabic{enumi}.}
+
+@defcommand{practice}{}{
+\section*{Practice}}
+
+@defcommand{problems}{}{
+\section*{Problems}}
+
+@defcommand{extracredit}{}{
+\section*{Extra Credit}}
+}
+
+@defcommand{hw*}{^num}{@asgnname{Homework ^num}
 @coursedate{hw^num}@dateprefix{Due: }
 \renewcommand{\labelenumi}{\arabic{enumi}.}
 
@@ -359,6 +375,11 @@ access to the code you've just written.
 @defcommand{shellinclude}{^file}{@includecode/lang{bash}{^file}}
 @defcommand{shellsolution}{^name}{@version{sol}{\begin{lstlisting}
 @include{^name}\end{lstlisting}}}
+%% Golang Definitions
+@defcommand{golang}{^text}{@code{go}{^text}}
+@defcommand{golanginline}{^text}{@codeinline{go}{^text}}
+@defcommand{golanginclude}{^file}{@includecode/lang{go}{^file}}
+@defcommand{golangsolution}{^name}{@version{sol}{@includecode/lang{go}{^name}}}
 
 @defcommand{href}{^site ^text}{\href{^site}{^text}\footnote{\url{^site}}}
 
