@@ -64,31 +64,32 @@ Dependencies
 
 To run this, you should make sure that you have installed:
 
-- pygments
 - rubber
 - latex
 - racket
+- pygments (only needed if you're using syntax highlighting)
+- pdftk (only needed if you're going to password protect documents)
 
 
 Debian/Ubuntu
 -------------
 
 ```shell
-apt-get install rubber python-pygments texlive-latex-base racket
+apt-get install rubber texlive-latex-base racket pdftk python-pygments
 ```
 
 Gentoo
 -------
 
 ```shell
-emerge -av rubber pygments texlive racket
+emerge -av rubber texlive racket pdftk pygments
 ```
 
 FreeBSD
 -------
 
 ```shell
-pkg install rubber py27-pygments texlive-base racket
+pkg install rubber texlive-base racket pdftk py27-pygments
 ```
 
 
