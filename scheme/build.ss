@@ -42,13 +42,15 @@
 (define rubber-pipe (find-executable-path "rubber-pipe"))
 (define r-opts `("--pdf" "--texpath" ,latex-root "--texpath" ,(string-append course-dir "/latex")))
 (define (build-tex-file name-with-mode . opts)
-  (apply subprocess 
-         (append (list (open-output-file (format "~a/~a.pdf" (output-dir) name-with-mode) #:exists 'replace)
-                       (open-input-file (format "~a.tex" name-with-mode))
-                       (current-error-port)
-                       rubber-pipe)
-                 r-opts
-                 opts)))
+  (let-values ([(proc out in err)
+                (apply subprocess
+                       (append (list (open-output-file (format "~a/~a.pdf" (output-dir) name-with-mode) #:exists 'replace)
+                                     (open-input-file (format "~a.tex" name-with-mode))
+                                     (current-error-port)
+                                     rubber-pipe)
+                               r-opts
+                               opts))])
+              proc))
 
 
 (define (run-cmd . args)
@@ -104,8 +106,12 @@
             (lambda () (preprocess doc.tex.mz)))))
       (slatex/no-latex name-with-mode.tex)
       (with-umask (output-umask)
-        (build-tex-file name-with-mode))
+        (subprocess-wait (build-tex-file name-with-mode)))
       (rename-file-or-directory name-with-mode.tex (string-append "." name-with-mode.tex) #t)
+      (let ([rubtmp-files (find-files (lambda (pth) (regexp-match "^rubtmp*" pth)))])
+        (when (cons? rubtmp-files)
+          (make-directory* "build_files")
+          (map (lambda (pth) (rename-file-or-directory pth (build-path "build_files/" pth) #t)) rubtmp-files)))
       (void))))
 
 
