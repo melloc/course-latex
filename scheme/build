@@ -1,7 +1,28 @@
 #!/usr/bin/env racket
 #lang racket
 
-(require "common.rkt" "build.ss")
+(require "doc.rkt" "build.rkt")
+
+(define (argv) (current-command-line-arguments))
+
+(define (parse-args name arguments)
+  (parse-command-line name arguments
+       `([multi
+           [("-m" "--mode") ,(lambda (flag m) m) ("Add this mode" "mode")]]
+         [once-each
+           [("-r" "--recursive") ,(lambda (flag) 'recursive)
+                                 ("Process files recursively")]
+           [("-n" "--name") ,(lambda (flag fname) (file-name fname))
+                                 ("Output PDF as <name>.pdf" "name")]
+           [("-p" "--password") ,(lambda (flag password) (password-protect password))
+                                 ("protect the PDF with the password <passwd>" "passwd")]]
+         [once-any
+           [("-w" "--web") ,(lambda (flag) (output-to-web #t))
+                                 (,(format "Output PDF in the web directory (~a/content/<type>/<name>.pdf)" web-directory))]
+           [("-o" "--output-dir") ,(lambda (flag dir) (output-dir dir))
+                                 ("Output PDF in given directory (defaults to directory of main.tex.mz)" "dir")]])
+       (lambda (modes . rest) (values modes rest))
+       '("content-type" "name")))
 
 (define-values (modes args) (parse-args "build" (argv)))
 (define-values (doc-dir doc-type doc-name) (get-doc args (current-directory)))
@@ -9,7 +30,7 @@
 (define mode-eval-string (format "~a" `(define modes ',modes)))
 (define name-with-mode (or (file-name) (string-append doc-name mode-string)))
 
-(when (output-to-web) 
+(when (output-to-web)
   (output-dir (format "~a/content/~a" web-directory doc-type))
   (output-umask #o002))
 
