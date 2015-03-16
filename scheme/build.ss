@@ -36,21 +36,55 @@
                        (lambda () e ...)
                        (lambda () (set-umask! old-umask))))))))
 
+
+;; Modified versions of wait-for-pipes and pipe-between from synx/util.plt (v. 1.9)
+;; http://planet.racket-lang.org/package-source/synx/util.plt/1/9/pipe-between.ss
+
+(define (wait-for-pipes pipes)
+  (for ((pipe pipes))
+    (let ([input (car pipe)]
+          [pid (cdr pipe)])
+      (close-output-port input)
+      (subprocess-wait pid))))
+
+(define-syntax conditional-pipe
+  (syntax-rules (input: pipes:)
+    [(_ (test process args ...) rest ...)
+     (conditional-pipe pipes: null input: (current-output-port) (test process args ...) rest ...)]
+    [(_ pipes: pipes input: input (test process args ...))
+     (if test (let-values
+                 ([(pid stdout stdin error) (subprocess (or input (current-output-port))
+                                                        (current-input-port)
+                                                        (current-error-port) 
+                                                        (find-executable-path process) 
+                                                        args ...)])
+                 (subprocess-wait pid)
+                 (wait-for-pipes pipes))
+       (copy-port (current-input-port) input))]
+    [(_ pipes: pipes input: input (test process args ...) rest ...)
+     (if test (let-values
+                ([(pid nothin stdin error) (subprocess (or input (current-output-port))
+                                                       #f
+                                                       (current-error-port)
+                                                       (find-executable-path process)
+                                                       args ...)])
+                (conditional-pipe pipes: (cons (cons stdin pid) pipes) input: stdin rest ...))
+       (conditional-pipe pipes: pipes input: input rest ...))]))
+
+
 (define (argv) (current-command-line-arguments))
 
 (define rubber (find-executable-path "rubber"))
 (define rubber-pipe (find-executable-path "rubber-pipe"))
 (define r-opts `("--pdf" "--texpath" ,latex-root "--texpath" ,(string-append course-dir "/latex")))
-(define (build-tex-file name-with-mode . opts)
-  (let-values ([(proc out in err)
-                (apply subprocess
-                       (append (list (open-output-file (format "~a/~a.pdf" (output-dir) name-with-mode) #:exists 'replace)
-                                     (open-input-file (format "~a.tex" name-with-mode))
-                                     (current-error-port)
-                                     rubber-pipe)
-                               r-opts
-                               opts))])
-              proc))
+(define (build-tex-file name-with-mode)
+  (parameterize ([current-output-port (open-output-file (format "~a/~a.pdf" (output-dir) name-with-mode) #:exists 'replace)]
+                 [current-input-port (open-input-file (format "~a.tex" name-with-mode))])
+                (conditional-pipe
+                  ;; Use pdftk if we need to password protect this PDF
+                  [(password-protect) "pdftk" "-" "output" "-" "user_pw" (password-protect)]
+                  ;; Run rubber-pipe on our tex file
+                  [#t "rubber-pipe" "--pdf" "--texpath" latex-root "--texpath" (string-append course-dir "/latex")])))
 
 
 (define (run-cmd . args)
@@ -61,6 +95,7 @@
 (define web-directory (or (getenv "WEB_DIR") (format "~a/web" course-dir)))
 (define output-to-web (make-parameter #f))
 (define output-umask (make-parameter #o007))
+(define password-protect (make-parameter #f))
 
 (define (parse-args name arguments)
   (parse-command-line name arguments
@@ -70,7 +105,9 @@
            [("-r" "--recursive") ,(lambda (flag) 'recursive)
                                  ("Process files recursively")]
            [("-n" "--name") ,(lambda (flag fname) (file-name fname))
-                                 ("Output PDF as <name>.pdf" "name")]]
+                                 ("Output PDF as <name>.pdf" "name")]
+           [("-p" "--password") ,(lambda (flag password) (password-protect password))
+                                 ("protect the PDF with the password <passwd>" "passwd")]]
          [once-any
            [("-w" "--web") ,(lambda (flag) (output-to-web #t))
                                  (,(format "Output PDF in the web directory (~a/content/<type>/<name>.pdf)" web-directory))]
@@ -106,7 +143,8 @@
             (lambda () (preprocess doc.tex.mz)))))
       (slatex/no-latex name-with-mode.tex)
       (with-umask (output-umask)
-        (subprocess-wait (build-tex-file name-with-mode)))
+        ;; (subprocess-wait (build-tex-file name-with-mode)))
+        (build-tex-file name-with-mode))
       (rename-file-or-directory name-with-mode.tex (string-append "." name-with-mode.tex) #t)
       (let ([rubtmp-files (find-files (lambda (pth) (regexp-match "^rubtmp*" pth)))])
         (when (cons? rubtmp-files)
