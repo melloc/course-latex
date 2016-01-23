@@ -343,17 +343,45 @@ access to the code you've just written.
     (let ( [filename (get-arg)])
         (let-values ([(proc stdout stdin stderr) (pygmentize "-f" "latex" filename)])
             (string-replace (port->string stdout) "@" "@@"))))
+% include a java or scala file with the package declaration removed
+@(define (package-trim)
+  (let ([input-port (open-input-file (get-arg))])
+    (string-trim
+      (string-replace (port->string input-port) "@" "@@")
+      #px"package (.*?)(\n)[\\s]*(?=[^\\s])|[\\s]*")))
 %% Java Definitions
 @defcommand{java}{^text}{@code{java}{^text}}
 @defcommand{javainclude}{^file}{@includecode/lang{java}{^file}}
 @defcommand{javainline}{^text}{@codeinline{java}{^text}}
 @defcommand{javasolution}{^name}{@version{sol}{@includecode/lang{java}{^name}}}
 @defcommand{javaapi}{^text}{\href{http://docs.oracle.com/javase/7/docs/api/^text.html}{^text}}
+@version{java} {
+  @defcommand{langnotes}{^path}{
+    @localnotes{java/^path}
+  }
+  @defcommand{langsol}{^path}{
+    @version{sol}{@java{@package-trim{java/^path.java}}}
+  }
+  @defcommand{langsrc}{^path}{
+    @java{@package-trim{java/^path.java}}
+  }
+}
 %% Scala Definitions
 @defcommand{scala}{^text}{@code{scala}{^text}}
 @defcommand{scalainline}{^text}{@codeinline{scala}{^text}}
 @defcommand{scalainclude}{^file}{@includecode/lang{scala}{^file}}
 @defcommand{scalasolution}{^name}{@version{sol}{@includecode/lang{scala}{^name}}}
+@version{scala} {
+  @defcommand{langnotes}{^path}{
+    @localnotes{scala/^path}
+  }
+  @defcommand{langsol}{^path}{
+    @version{sol}{@scala{@package-trim{scala/^path.scala}}}
+  }
+  @defcommand{langsrc}{^path}{
+    @scala{@package-trim{scala/^path.scala}}
+  }
+}
 %% Scheme Definitions
 @defcommand{scheme}{^text}{@code{scheme}{^text}}
 @defcommand{schemedisplay}{^text}{@env{schemedisplay}{^text}}
