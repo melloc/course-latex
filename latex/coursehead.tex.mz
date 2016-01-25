@@ -181,6 +181,8 @@ access to the code you've just written.
 \DeclareRobustCommand{\CSprof}{@professor-top}
 
 @defcommand{TODO}{^arg}{{\LARGE\bf ^arg}} % style for noting things needing fixing
+@defcommand{important}{}{\textbf{Important:} }
+@defcommand{TA}{^arg}{\textbf{TA: ***^arg***}}
 @defcommand{alternate}{^arg}{\textbf{Alternate Solution (^arg):} }
 @defcommand{summary}{}{{\bf Summary:} }
 @defcommand{answer}{}{{\bf Answer:} }
