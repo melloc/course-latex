@@ -325,7 +325,7 @@ access to the code you've just written.
 }}
 
 @defcommand{oopdisplay}{^text}{@scala{^text}}
-@defcommand{oop}{^text}{@oopslatexstart{}\scheme{^text}@oopslatexend{}}
+@defcommand{oop}{^text}{@codeinline{scala}{^text}}
 @defcommand{oopcode}{^text}{@code{scala}{^text}}
 @(define (pygmentize . args)
     (apply subprocess (append `(#f #f #f ,(find-executable-path "pygmentize")) args)))
