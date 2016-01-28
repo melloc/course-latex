@@ -12,8 +12,8 @@
     [(labs lab) "labs"]
     [(projects project proj) "projects"]
     [(lectures lecture lec) "lectures"]
-    [(documentation doc documents handouts) "docs"]
-    [else #f]))
+    [(documentation doc docs documents handouts) "docs"]
+    [else (error (format "Unrecognized docuement type \"~a\"" arg-type))]))
 
 ;; get-doc (listof string) path-string? ->
 ;; takes the arguments to the build program and the current directory
