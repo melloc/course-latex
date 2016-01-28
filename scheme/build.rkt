@@ -31,6 +31,8 @@
   (with-cwd doc-dir
       (unless (file-exists? doc.tex.mz)
         (error (format "MZ file (~a) doesn't exist in directory ~a." doc.tex.mz (current-directory))))
+      (when (file-exists? name-with-mode.tex)
+        (error (format "The file ~a already exists; please delete it and run again." name-with-mode.tex)))
       ;; Use mztext to process the file. 
       (with-umask #o007 ; We restrict the umask first to be safe.
         (parameterize ([read-case-sensitive #t]
