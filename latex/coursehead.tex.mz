@@ -74,6 +74,7 @@
 \usepackage{algorithm}
 \usepackage{graphs}
 \usepackage{tikz,pgfplots}
+\usetikzlibrary{snakes,arrows,shapes}
 \lstdefinelanguage{scala}{}
 
 \input{pygments_support.tex}
