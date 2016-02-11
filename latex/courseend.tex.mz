@@ -1,13 +1,15 @@
-\hspace{12pt}
-\begin{center}
-\line(1,0){450}
-\end{center}
-\hspace{12pt}
-Please let us know if you find any mistakes, inconsistencies, or
-confusing language in this or any other CS@course-number document by
-filling out the anonymous feedback form:
+@(when (show-feedback)
+    (list
+        "\\hspace{12pt}"
+        "\\begin{center}"
+        "\\line(1,0){450}"
+        "\\end{center}"
+        "\\hspace{12pt}"
+        "Please let us know if you find any mistakes, inconsistencies, or "
+        "confusing language in this or any other CS@course-number document by "
+        "filling out the anonymous feedback form:\n\n"
+        "\\url{" (getenv "FEEDBACK_URL") "}."))
 
-\url{@(getenv "FEEDBACK_URL")}.
 \end{schemeregion}
 \end{document}
 
