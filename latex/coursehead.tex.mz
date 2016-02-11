@@ -65,6 +65,9 @@
 \usepackage{enumerate}
 \usepackage{timestamp}
 \usepackage{fancyvrb}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
 \usepackage{microtype}
 \usepackage{listings}
 \usepackage{algorithmic}
