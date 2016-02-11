@@ -26,6 +26,7 @@
                   [#t "rubber-pipe" "--pdf" "--texpath" latex-root "--texpath" (string-append course-dir "/latex")])))
 
 (define (run-build doc-dir main-name doc-name mode-eval-string name-with-mode)
+  (define build-error (make-parameter #f))
   (define name-with-mode.tex (string-append name-with-mode ".tex"))
   (define doc.tex.mz main-name)
   (with-cwd doc-dir
@@ -33,27 +34,30 @@
         (error (format "MZ file (~a) doesn't exist in directory ~a." doc.tex.mz (current-directory))))
       (when (file-exists? name-with-mode.tex)
         (error (format "The file ~a already exists; please delete it and run again." name-with-mode.tex)))
-      ;; Use mztext to process the file. 
-      (with-umask #o007 ; We restrict the umask first to be safe.
-        (parameterize ([read-case-sensitive #t]
-                       [current-directory doc-dir])
-          (add-eval (read-syntax 'command-line (open-input-string mode-eval-string)))
-          (add-eval (read-syntax 'command-line (open-input-string course-eval-string)))
-          (add-eval (read-syntax 'command-line (open-input-string cs-eval-string)))
-          (add-eval `(define name-with-mode ,name-with-mode))
-          (with-output-to-file name-with-mode.tex #:exists 'replace
-            (lambda () (preprocess doc.tex.mz)))))
-      ;; Now run slatex on the generated tex file
-      (slatex/no-latex name-with-mode.tex)
-      ;; We've finished preprocessing the tex file. Make the PDF.
-      (with-umask (output-umask)
-        (build-tex-file name-with-mode))
+      (with-handlers ([exn:fail? build-error])
+        ;; Use mztext to process the file.
+        (with-umask #o007 ; We restrict the umask first to be safe.
+          (parameterize ([read-case-sensitive #t]
+                         [current-directory doc-dir])
+            (add-eval (read-syntax 'command-line (open-input-string mode-eval-string)))
+            (add-eval (read-syntax 'command-line (open-input-string course-eval-string)))
+            (add-eval (read-syntax 'command-line (open-input-string cs-eval-string)))
+            (add-eval `(define name-with-mode ,name-with-mode))
+            (with-output-to-file name-with-mode.tex #:exists 'replace
+              (lambda () (preprocess doc.tex.mz)))))
+        ;; Now run slatex on the generated tex file
+        (slatex/no-latex name-with-mode.tex)
+        ;; We've finished preprocessing the tex file. Make the PDF.
+        (with-umask (output-umask)
+          (build-tex-file name-with-mode)))
       ;; Cleanup: hide the tex file, and delete rubber's temporary files
       (rename-file-or-directory name-with-mode.tex (string-append "." name-with-mode.tex) #t)
       (let ([rubtmp-files (find-files (lambda (pth) (regexp-match "^rubtmp*" pth)))])
         (when (cons? rubtmp-files)
           (make-directory* "build_files")
           (map (lambda (pth) (rename-file-or-directory pth (build-path "build_files/" pth) #t)) rubtmp-files)))
+      (when (build-error)
+        (raise (build-error)))
       (void)))
 
 
