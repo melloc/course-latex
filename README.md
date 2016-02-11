@@ -84,6 +84,15 @@ FreeBSD
 pkg install rubber texlive-base racket pdftk py27-pygments
 ```
 
+Mac OS X (using [pkgsrc](http://pkgsrc.joyent.com/))
+----------------------------------------------------
+
+```shell
+pkgin in py27-pygments rubber teTeX tex-pgfplots
+```
+
+Install [Racket](http://racket-lang.org/) separately, and add `/Applications/Racket vX.y/bin/` directory to your `PATH`.
+
 
 Creating A Document
 ===================

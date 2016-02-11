@@ -23,7 +23,7 @@
                   ;; Use pdftk if we need to password protect this PDF
                   [(password-protect) "pdftk" "-" "output" "-" "user_pw" (password-protect)]
                   ;; Run rubber-pipe on our tex file
-                  [#t "rubber-pipe" "--pdf" "--texpath" latex-root "--texpath" (string-append course-dir "/latex")])))
+                  [#t "rubber-pipe" "--pdf" "-e" "set program pdflatex" "--texpath" latex-root "--texpath" (string-append course-dir "/latex")])))
 
 (define (run-build doc-dir main-name doc-name mode-eval-string name-with-mode)
   (define build-error (make-parameter #f))
